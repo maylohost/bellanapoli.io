@@ -77,7 +77,7 @@ export default function TestnetWarningModal() {
 
           {/* Titolo */}
           <h4 className="text-base md:text-lg font-semibold text-gray-900 dark:text-white text-center">
-            Periodo Testnet Terminato
+            TESTNET IN PAUSA
           </h4>
 
           {/* Messaggio */}
