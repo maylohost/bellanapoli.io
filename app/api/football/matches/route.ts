@@ -1,5 +1,8 @@
 import { NextResponse } from 'next/server';
 
+// Forza la route ad essere dinamica (non statica) perché usa request.url
+export const dynamic = 'force-dynamic';
+
 interface Match {
   id: number;
   utcDate: string;
