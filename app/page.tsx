@@ -5,6 +5,7 @@ import PredictionList from '../components/PredictionList';
 import CancelledPredictionsList from '../components/CancelledPredictionsList';
 import ResolvedPredictionsList from '../components/ResolvedPredictionsList';
 import CategoryTabs from '../components/CategoryTabs';
+import TestnetWarningModal from '../components/TestnetWarningModal';
 
 export default function Home() {
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -29,6 +30,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-white dark:bg-dark-bg select-none">
+      <TestnetWarningModal />
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-10">
         {/* Logo e barra di ricerca */}
         <div className="flex justify-center items-center space-x-8 mb-8">
