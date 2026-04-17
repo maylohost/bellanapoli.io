@@ -1,64 +1,35 @@
-# Mapping Campi Date - Admin Panel
+# Date field mapping — admin panel
 
-## 📋 Mapping Corretto
+## Form labels ↔ database columns
 
-### **Form Labels ↔ Database Fields:**
+| Form label (Italian UI) | DB column | Meaning | Contract argument |
+|-------------------------|-----------|---------|---------------------|
+| **Data Chiusura Scommesse** (betting closes) | `closing_date` | Last moment users can bet | `closingDate` (first arg) |
+| **Data Chiusura Prediction** (event ends) | `closing_bid` | When the underlying event is over | `closingBid` (second arg) |
 
-| Etichetta Form | Campo Database | Descrizione | Uso nel Contratto |
-|----------------|----------------|-------------|-------------------|
-| **"Data Chiusura Scommesse"** | `closing_date` | Fino a quando si può scommettere | `closingDate` (primo parametro) |
-| **"Data Chiusura Prediction"** | `closing_bid` | Quando finisce l'evento | `closingBid` (secondo parametro) |
+## Contract rule
 
-### **🔧 Logica del Contratto:**
+The pool contract enforces:
 
-Il contratto smart richiede:
 ```solidity
 require(closingBid > closingDate, "Closing bid must be after closing date");
 ```
 
-**Quindi:**
-- `closing_date` (scommesse) deve essere **prima**
-- `closing_bid` (prediction) deve essere **dopo**
+So in data entry:
 
-### **📅 Esempio Pratico:**
+- `closing_date` (betting deadline) must be **earlier**  
+- `closing_bid` (event / resolution window) must be **later**  
 
-**Prediction**: "Il Napoli vincerà la partita?"
+## Example
 
-1. **Data Chiusura Scommesse**: 2025-11-30 23:59:00
-   - Campo DB: `closing_date`
-   - Parametro contratto: `closingDate`
-   - Significato: Ultimo momento per scommettere
+Prediction: “Will Napoli win the match?”
 
-2. **Data Chiusura Prediction**: 2025-12-01 23:59:00
-   - Campo DB: `closing_bid`
-   - Parametro contratto: `closingBid`
-   - Significato: Quando finisce l'evento (dopo la partita)
+1. **Betting closes** (`closing_date` → `closingDate`): e.g. 2025-11-30 23:59 — last time to place a bet  
+2. **Event ends** (`closing_bid` → `closingBid`): e.g. 2025-12-01 23:59 — after the match, when the outcome is known  
 
-### **✅ Risultato:**
+## Admin flows
 
-- ✅ **Scommesse aperte** fino al 30 novembre
-- ✅ **Evento finisce** il 1 dicembre
-- ✅ **Contratto valido** (closingBid > closingDate)
+- **Create / edit prediction**: the two datetime fields map 1:1 to `closing_date` and `closing_bid` as in `AdminPanel.tsx`  
+- **Activate contract**: `closing_date` → `closingDate`, `closing_bid` → `closingBid`  
 
-## 🎯 Form Comportamento
-
-### **Creazione Prediction:**
-- **"Data Chiusura Scommesse"** → salva in `closing_date`
-- **"Data Chiusura Prediction"** → salva in `closing_bid`
-
-### **Modifica Prediction:**
-- **"Data Chiusura Scommesse"** → aggiorna `closing_date`
-- **"Data Chiusura Prediction"** → aggiorna `closing_bid`
-
-### **Deploy Contract:**
-- `closing_date` → `closingDate` (primo parametro)
-- `closing_bid` → `closingBid` (secondo parametro)
-
-## 🚀 Test
-
-Ora quando crei una prediction:
-1. **"Data Chiusura Scommesse"**: 30 novembre 2025
-2. **"Data Chiusura Prediction"**: 1 dicembre 2025
-3. **Deploy Contract**: Funzionerà senza errori!
-
-**Il mapping è ora corretto e coerente!** ✅
+This matches the live labels in the admin forms: **Data Chiusura Scommesse** binds to `closing_date`, **Data Chiusura Prediction** binds to `closing_bid`.

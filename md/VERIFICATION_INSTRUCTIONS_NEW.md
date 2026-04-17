@@ -1,77 +1,48 @@
-# Istruzioni Verifica BSCScan - Nuovo Contratto
+# BSCScan verification — new factory (testnet)
 
-## 📋 Informazioni Contratto
+## Contract metadata
 
-- **Contract Address**: `0x4F782D68766c543C2cfB495169988f999B70Ea08`
-- **Network**: BSC Testnet
-- **Deployer**: `0x7D03E4E68017fdf5240Ca3c2358d72370e5D6b77`
-- **Transaction Hash**: `0x8c0c2691a4b173a7bedccb372646e578069dd737f4570d28347b49da67a7bc84`
+- **Contract address**: `0x4F782D68766c543C2cfB495169988f999B70Ea08`  
+- **Network**: BSC testnet  
+- **Deployer** (on-chain): `0x7D03E4E68017fdf5240Ca3c2358d72370e5D6b77`  
+- **Deployment tx**: `0x8c0c2691a4b173a7bedccb372646e578069dd737f4570d28347b49da67a7bc84`  
 
-## 🔗 Link BSCScan
+## Explorer
 
-https://testnet.bscscan.com/address/0x4F782D68766c543C2cfB495169988f999B70Ea08
+https://testnet.bscscan.com/address/0x4F782D68766c543C2cfB495169988f999B70Ea08  
 
-## 📝 Verifica Manuale
+## Manual verification steps
 
-### 1. Vai su BSCScan Testnet
-- URL: https://testnet.bscscan.com/address/0x4F782D68766c543C2cfB495169988f999B70Ea08
-- Clicca su "Contract" tab
-- Clicca su "Verify and Publish"
+1. Open the contract on BSCScan testnet.  
+2. **Contract** tab → **Verify and Publish**.  
+3. Choose **Solidity (single file)** (or match how you flattened).  
+4. **Compiler**: e.g. `v0.8.24+commit.e01b4b5c` (must match your build).  
+5. **License**: MIT (or whatever you shipped).  
+6. **Source**: paste `BellaNapoliPredictionFactory-flattened-new.sol` (or the exact flattened file you use).  
+7. **Constructor arguments**: none if the constructor takes no ABI-encoded parameters.  
+8. Submit and wait for the compiler output.  
 
-### 2. Configurazione Verifica
-- **Contract Address**: `0x4F782D68766c543C2cfB495169988f999B70Ea08`
-- **Compiler Type**: Solidity (Single file)
-- **Compiler Version**: v0.8.24+commit.e01b4b5c
-- **Open Source License Type**: MIT License
+## Admin-oriented functions added on this factory
 
-### 3. Codice Sorgente
-- **Source Code**: Usa il file `BellaNapoliPredictionFactory-flattened-new.sol`
-- **Constructor Arguments**: Nessuno (il contratto non ha parametri nel costruttore)
+- `setPoolWinner(address pool, bool winner)`  
+- `emergencyResolvePool(address pool, bool winner, string reason)`  
+- `setPoolEmergencyStop(address pool, bool stopped)`  
+- `cancelPoolPrediction(address pool, string reason)`  
 
-### 4. Verifica
-- Incolla tutto il contenuto del file flattened
-- Clicca "Verify and Publish"
-- Attendi la conferma
+Matching events were added for traceability.
 
-## ✅ Funzionalità Aggiunte
+## Files
 
-Questo nuovo contratto include le seguenti funzioni di gestione pool:
+- `contracts/BellaNapoliPredictionFactory-flattened-new.sol` — verification payload  
+- `lib/contracts.ts` — ABI / address wiring in the app  
+- `deployment-info.json` — **gitignored** template for local deploy metadata; do not commit secrets  
 
-### Funzioni Factory per Pool Management:
-- `setPoolWinner(address, bool)` - Imposta il vincitore di una pool
-- `emergencyResolvePool(address, bool, string)` - Risoluzione d'emergenza
-- `setPoolEmergencyStop(address, bool)` - Attiva/disattiva stop d'emergenza
-- `cancelPoolPrediction(address, string)` - Cancella una pool
+## Post-verification smoke tests
 
-### Eventi Aggiunti:
-- `PoolWinnerSet(address indexed poolAddress, bool winner)`
-- `PoolEmergencyResolved(address indexed poolAddress, bool winner, string reason)`
-- `PoolEmergencyStopToggled(address indexed poolAddress, bool stopped)`
-- `PoolCancelled(address indexed poolAddress, string reason)`
-
-## 🎯 Vantaggi
-
-1. **Gestione Centralizzata**: L'admin panel può gestire tutte le pool tramite la factory
-2. **Sicurezza**: Solo l'owner della factory può eseguire operazioni critiche
-3. **Flessibilità**: Possibilità di gestire pool individuali senza accesso diretto
-4. **Eventi**: Tracciamento completo delle operazioni
-
-## 📁 File Coinvolti
-
-- `contracts/BellaNapoliPredictionFactory-flattened-new.sol` - Codice flattened per verifica
-- `lib/contracts.ts` - ABI aggiornato con nuove funzioni
-- `deployment-info.json` - Informazioni deploy
-
-## 🔧 Test Post-Verifica
-
-Dopo la verifica, testa le funzioni:
-1. Creazione pool tramite factory
-2. Gestione pool tramite funzioni factory
-3. Eventi emessi correttamente
-4. Admin panel funzionante
+1. Create a pool from the factory.  
+2. Drive each admin action (winner, emergency, cancel) and read logs on BSCScan.  
+3. Confirm the admin UI still points at `NEXT_PUBLIC_FACTORY_ADDRESS`.  
 
 ---
 
-**Data**: 2025-10-25  
-**Status**: ✅ Deploy Completato  
-**Prossimo**: Verifica BSCScan
+**Date**: 2025-10-25  

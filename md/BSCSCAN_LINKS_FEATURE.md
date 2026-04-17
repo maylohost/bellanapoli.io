@@ -1,18 +1,17 @@
-# Link BSCScan nell'Admin Panel
+# BSCScan links in the admin panel
 
-## 🎯 Funzionalità Aggiunta
+## Summary
 
-### **Descrizione:**
-Aggiunto link diretto a BSCScan per ogni prediction che ha un contratto deployato nell'admin panel.
+Direct BSCScan links were added for each prediction that has an on-chain pool address stored in the database.
 
-### **📍 Posizione:**
-- **Sezione**: Informazioni prediction esistenti
-- **Layout**: Sia mobile che desktop
-- **Condizione**: Solo se `pool_address` è presente nel database
+## Placement
 
-## 🔧 Implementazione
+- **Section**: Existing prediction details in the admin UI  
+- **Layout**: Mobile and desktop  
+- **Condition**: Rendered only when `pool_address` is present  
 
-### **Codice Aggiunto:**
+## Implementation snippet
+
 ```tsx
 {prediction.pool_address && (
   <div className="flex items-center gap-2 mt-2">
@@ -34,61 +33,22 @@ Aggiunto link diretto a BSCScan per ogni prediction che ha un contratto deployat
 )}
 ```
 
-## 🎨 Design
+## UX
 
-### **Aspetto Visivo:**
-- **Etichetta**: "Contract:" in grigio
-- **Indirizzo**: Formato abbreviato (primi 6 + ultimi 4 caratteri)
-- **Icona**: Freccia esterna per indicare link esterno
-- **Colori**: Blu chiaro con hover effect
-- **Layout**: Responsive (mobile e desktop)
+- **Label**: “Contract:” in muted text  
+- **Address**: Short form (first 6 + last 4 hex chars)  
+- **Icon**: External-link affordance  
+- **Colors**: Blue chip with hover state  
+- **Responsive**: Stacks cleanly on small screens  
 
-### **Esempio:**
-```
-Scadenza: 30/10/2025 • Creata: 22/10/2025
-Contract: 0x338A...090d [↗]
-```
+## Behaviour
 
-## 🔗 Funzionalità
+- **URL**: `https://testnet.bscscan.com/address/{pool_address}`  
+- **Target**: `_blank` with `rel="noopener noreferrer"`  
+- **Visibility**: Only when `pool_address` is set  
 
-### **Link BSCScan:**
-- **URL**: `https://testnet.bscscan.com/address/{pool_address}`
-- **Target**: `_blank` (nuova tab)
-- **Security**: `rel="noopener noreferrer"`
+## Benefits
 
-### **Comportamento:**
-1. **Solo se presente**: Link appare solo se `pool_address` non è null/undefined
-2. **Click**: Apre BSCScan in nuova tab
-3. **Hover**: Effetto hover con cambio colore
-4. **Responsive**: Funziona su mobile e desktop
-
-## 📱 Layout
-
-### **Mobile:**
-- Link sotto le informazioni di scadenza
-- Layout verticale con gap
-- Pulsanti sotto il link
-
-### **Desktop:**
-- Link sotto le informazioni di scadenza
-- Layout compatto
-- Pulsanti affiancati
-
-## ✅ Vantaggi
-
-1. **Accesso Rapido**: Link diretto al contratto su BSCScan
-2. **Verifica**: Possibilità di verificare lo stato del contratto
-3. **Debug**: Facile accesso per troubleshooting
-4. **UX**: Migliora l'esperienza admin
-5. **Trasparenza**: Mostra chiaramente quale contratto è associato
-
-## 🚀 Risultato
-
-Ora nell'admin panel, per ogni prediction con contratto deployato:
-- ✅ **Link BSCScan** visibile e cliccabile
-- ✅ **Indirizzo abbreviato** per leggibilità
-- ✅ **Icona esterna** per chiarezza
-- ✅ **Design coerente** con il resto dell'UI
-- ✅ **Responsive** su tutti i dispositivi
-
-**La funzionalità è ora attiva e funzionante!** 🎉
+1. One click from admin UI to contract code and internal txs  
+2. Easier verification and debugging  
+3. Clear association between a row in the DB and an on-chain pool  

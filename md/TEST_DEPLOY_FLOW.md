@@ -1,86 +1,62 @@
-# Test Deploy Flow - Admin Panel
+# Admin panel — deploy / redeploy test flow
 
-## 🧪 Test Scenarios
+## Scenario 1 — first activation (`in_attesa`)
 
-### **Scenario 1: Deploy Contract (Prediction in_attesa)**
-1. **Prediction Status**: `in_attesa`
-2. **Pool Address**: `NULL`
-3. **Azione**: Clicca "Attiva Contract"
-4. **Risultato Atteso**:
-   - ✅ Pool creata sulla blockchain
-   - ✅ Database aggiornato: `status = 'attiva'`, `pool_address = '0xNEW...'`
-   - ✅ RPC Response: `{success: true, message: "Contract activated successfully"}`
+1. **Prediction status**: `in_attesa`  
+2. **Pool address**: `NULL`  
+3. **Action**: click **Activate contract**  
+4. **Expected**  
+   - Pool contract created on-chain  
+   - Row updated: `status = 'attiva'`, `pool_address = '0x…'`  
+   - RPC JSON: `{ success: true, message: "Contract activated successfully" }`  
 
-### **Scenario 2: Redeploy Contract (Prediction attiva)**
-1. **Prediction Status**: `attiva`
-2. **Pool Address**: `0xOLD123...`
-3. **Azione**: Clicca "Redeploy Contract"
-4. **Risultato Atteso**:
-   - ✅ Nuova pool creata sulla blockchain
-   - ✅ Database aggiornato: `pool_address = '0xNEW456...'` (status rimane `attiva`)
-   - ✅ RPC Response: `{success: true, message: "Contract activated successfully"}`
+## Scenario 2 — redeploy while `attiva`
 
-## 🔍 Debug Steps
+1. **Prediction status**: `attiva`  
+2. **Pool address**: existing `0x…`  
+3. **Action**: **Redeploy contract**  
+4. **Expected**  
+   - New pool deployed  
+   - `pool_address` updated to the new address; status stays `attiva`  
+   - Same success payload shape as scenario 1  
 
-### **1. Controlla Console Browser**
-```javascript
-// Dovresti vedere questi log:
-🚀 Attivando contract per prediction: [ID]
-📅 Date convertite: {...}
-✅ Contract creato con indirizzo: 0x...
-📋 Hash transazione: 0x...
-✅ Contract attivato con successo: Contract activated successfully
-✅ Prediction attivata con successo: {predictionId: ..., contractAddress: ..., rpcResponse: {...}}
-```
+## Browser console checks
 
-### **2. Controlla Database Supabase**
+You should see logs similar to:
+
+- Contract activation started for prediction id  
+- Parsed date → unix fields for `closingDate` / `closingBid`  
+- New pool address + tx hash  
+- RPC success envelope parsed end-to-end  
+
+## Database check (Supabase SQL)
+
 ```sql
--- Verifica che la prediction sia stata aggiornata
-SELECT id, title, status, pool_address, updated_at 
-FROM predictions 
-WHERE id = '[PREDICTION_ID]'
+SELECT id, title, status, pool_address, updated_at
+FROM predictions
+WHERE id = '<prediction-uuid>'
 ORDER BY updated_at DESC;
 ```
 
-### **3. Controlla Blockchain**
-- Vai su BSCScan Testnet
-- Cerca l'indirizzo della pool creata
-- Verifica che sia verificata e funzionante
+## Chain check
 
-## ⚠️ Possibili Errori
+- Open the pool address on BSCScan testnet.  
+- Confirm bytecode is present and calls match the factory you configured.  
 
-### **Errore RPC**
-```
-❌ Errore RPC: [error details]
-```
-**Soluzione**: Verifica connessione Supabase e permessi
+## Common failures
 
-### **Errore Attivazione**
-```
-❌ Errore attivazione contract: Prediction not found
-```
-**Soluzione**: Verifica che l'ID prediction sia corretto
+| Symptom | Likely cause |
+|---------|----------------|
+| RPC error banner | Supabase RPC auth / RLS / network |
+| “Prediction not found” | Wrong id or row deleted |
+| Contract revert | Wallet, gas, or date ordering (`closingBid` must be after `closingDate`) |
 
-### **Errore Contract Creation**
-```
-❌ Errore durante attivazione contract: [contract error]
-```
-**Soluzione**: Verifica wallet connesso e gas sufficiente
+## Success criteria
 
-## ✅ Success Indicators
+1. Wallet prompt completes without revert.  
+2. Console shows activation steps without thrown errors.  
+3. `pool_address` populated in Supabase.  
+4. UI shows **attiva** with explorer link.  
+5. Pool visible on BSCScan.  
 
-1. **Modal di transazione** si completa senza errori
-2. **Console log** mostra tutti i step completati
-3. **Database** ha `pool_address` aggiornato
-4. **Prediction** appare come "attiva" nell'admin panel
-5. **Pool** è verificabile su BSCScan
-
-## 🚀 Ready to Test!
-
-Il codice è ora aggiornato per gestire correttamente:
-- ✅ JSON response dalla funzione RPC
-- ✅ Error handling migliorato
-- ✅ Log dettagliati per debug
-- ✅ Supporto per Deploy e Redeploy
-
-**Prova ora il deploy/redeploy nell'admin panel!** 🎯
+The admin client was updated to parse structured RPC responses, surface errors clearly, and support both first deploy and redeploy.

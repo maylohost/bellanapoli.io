@@ -1,48 +1,34 @@
-# Fix RPC Consistency - Pool Loading
+# RPC consistency — pool loading
 
-## 🚨 Problema Identificato
+## Problem
 
-### **RPC Inconsistente:**
-- **Deploy**: Usa `https://bsc-testnet.publicnode.com` ✅
-- **Pool Loading**: Usava `https://data-seed-prebsc-1-s1.binance.org:8545/` ❌
+- **Deploy path** used `https://bsc-testnet.publicnode.com`  
+- **Pool listing** used `https://data-seed-prebsc-1-s1.binance.org:8545/`  
 
-### **Conseguenza:**
-Le pool create con il nuovo factory non venivano mostrate nella sezione "Pool di Predictions On-Chain" perché il sistema cercava su un RPC diverso.
+New pools created via the factory were not always visible under “on-chain prediction pools” because reads hit a different RPC endpoint than writes.
 
-## 🔧 Soluzione Applicata
+## Fix
 
-### **Funzioni Aggiornate:**
-1. **`listPools()`** - Riga 174
-2. **`getPoolSummary()`** - Riga 187  
-3. **`checkIsFactoryOwner()`** - Riga 87
+Aligned these call sites to the same RPC:
 
-### **Modifiche:**
+1. `listPools()`  
+2. `getPoolSummary()`  
+3. `checkIsFactoryOwner()`  
+
 ```typescript
-// PRIMA (sbagliato)
+// Before
 const provider = new ethers.JsonRpcProvider("https://data-seed-prebsc-1-s1.binance.org:8545/");
 
-// DOPO (corretto)
+// After
 const provider = new ethers.JsonRpcProvider("https://bsc-testnet.publicnode.com");
 ```
 
-## ✅ Risultato
+## Result
 
-### **Ora Funziona:**
-- ✅ **Deploy** usa `publicnode.com`
-- ✅ **Pool Loading** usa `publicnode.com`
-- ✅ **Consistenza** RPC garantita
-- ✅ **Pool visibili** nella sezione admin
+Deploy, enumeration, and owner checks all read the same chain head, so freshly created pools show up consistently in the admin panel.
 
-### **Flusso Corretto:**
-1. **Deploy** → Crea pool su `publicnode.com`
-2. **listPools** → Cerca pool su `publicnode.com`
-3. **Risultato** → Pool trovate e mostrate ✅
+## How to verify
 
-## 🎯 Test
-
-Dopo questa correzione:
-1. **Ricarica** l'admin panel
-2. **Verifica** che le pool appaiano in "Pool di Predictions On-Chain"
-3. **Controlla** che i dati delle pool siano corretti
-
-**Il problema RPC è ora risolto!** 🚀
+1. Reload the admin UI  
+2. Confirm pools appear under the on-chain section  
+3. Spot-check pool metadata against BSCScan  
