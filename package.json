@@ -27,7 +27,7 @@
     "react-is": "^19.2.0",
     "recharts": "^3.3.0",
     "valtio": "^2.1.8",
-    "viem": "^2.38.4",
+    "viem": "^2.48.1",
     "wagmi": "^2.19.1"
   },
   "overrides": {
