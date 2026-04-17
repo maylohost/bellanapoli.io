@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "NEXT_TELEMETRY_DISABLED=1 next build",
     "start": "next start",
     "lint": "next lint"
   },
@@ -46,6 +46,9 @@
     "@types/react-dom": "^18.2.18",
     "@types/trusted-types": "^2.0.7",
     "autoprefixer": "^10.4.16",
+    "baseline-browser-mapping": "^2.10.19",
+    "browserslist": "^4.28.2",
+    "caniuse-lite": "^1.0.30001788",
     "eslint": "^9.0.0",
     "eslint-config-next": "^15.5.4",
     "postcss": "^8.4.32",
