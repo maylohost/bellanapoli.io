@@ -136,7 +136,7 @@ See `.env.example`. In short:
 
 ## License
 
-Open source; see the license file(s) in the repository.
+[MIT](LICENSE). By contributing you agree your contributions are licensed under the same terms.
 
 ## Contributing
 
